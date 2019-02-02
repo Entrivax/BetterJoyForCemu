@@ -11,9 +11,15 @@ using System.Threading.Tasks;
 using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
+using System.Runtime.InteropServices;
 
-namespace BetterJoyForCemu {
+namespace BetterJoyForCemu
+{
     public class Joycon {
+        [DllImport("user32.dll")]
+        static extern void mouse_event(uint dwFlags, int dx, int dy, uint dwData,
+            int dwExtraInfo);
+
         float timing = 120.0f;
 
         public string path = String.Empty;
@@ -519,10 +525,13 @@ namespace BetterJoyForCemu {
 				other.otherStick = stick;
 			}
 
-			if (!isLeft && other != null) {
+			if (!isLeft) {
 				Array.Copy(stick, stick2, 2);
 				stick = otherStick;
-				other.otherStick = stick2;
+				//other.otherStick = stick2;
+                
+                var gyr = GetGyro();
+                mouse_event(0x0001, (int)gyr.Z, (int)gyr.X, 0, 0);
 			}
 			//
 
@@ -620,7 +629,8 @@ namespace BetterJoyForCemu {
                         report.SetButtonState(Xbox360Buttons.Start, buttons[(int)Button.PLUS] | buttons[(int)Button.CAPTURE]);
 
                         report.SetButtonState(Xbox360Buttons.LeftShoulder, buttons[(int)Button.SL]);
-                        report.SetButtonState(Xbox360Buttons.RightShoulder, buttons[(int)Button.SR]);
+                        //report.SetButtonState(Xbox360Buttons.RightShoulder, buttons[(int)Button.SR]);
+                        report.SetButtonState(Xbox360Buttons.RightShoulder, buttons[(int)(Button.SHOULDER_1)]);
 
                         report.SetButtonState(Xbox360Buttons.LeftThumb, buttons[(int)Button.STICK]);
                     }
@@ -637,15 +647,15 @@ namespace BetterJoyForCemu {
 			}
 
 			if (xin != null) {
-                if (other != null | isPro) {
+                //if (other != null | isPro) {
                     report.SetAxis(Xbox360Axes.LeftThumbX, (short)Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue, stick[0] * (stick[0] > 0 ? Int16.MaxValue : -Int16.MinValue))));
                     report.SetAxis(Xbox360Axes.LeftThumbY, (short)Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue, stick[1] * (stick[1] > 0 ? Int16.MaxValue : -Int16.MinValue))));
                     report.SetAxis(Xbox360Axes.RightThumbX, (short)Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue, stick2[0] * (stick2[0] > 0 ? Int16.MaxValue : -Int16.MinValue))));
                     report.SetAxis(Xbox360Axes.RightThumbY, (short)Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue, stick2[1] * (stick2[1] > 0 ? Int16.MaxValue : -Int16.MinValue))));
-                } else { // single joycon mode
-                    report.SetAxis(Xbox360Axes.LeftThumbY, (short)((isLeft ? 1 : -1) * Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue, stick[0] * (stick[0] > 0 ? Int16.MaxValue : -Int16.MinValue)))));
-                    report.SetAxis(Xbox360Axes.LeftThumbX, (short)((isLeft ? -1 : 1) * Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue, stick[1] * (stick[1] > 0 ? Int16.MaxValue : -Int16.MinValue)))));
-                }
+                //} else { // single joycon mode
+                //    report.SetAxis(Xbox360Axes.LeftThumbY, (short)((isLeft ? 1 : -1) * Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue, stick[0] * (stick[0] > 0 ? Int16.MaxValue : -Int16.MinValue)))));
+                //    report.SetAxis(Xbox360Axes.LeftThumbX, (short)((isLeft ? -1 : 1) * Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue, stick[1] * (stick[1] > 0 ? Int16.MaxValue : -Int16.MinValue)))));
+                //}
                 report.SetAxis(Xbox360Axes.LeftTrigger, (short)(buttons[(int)(isLeft ? Button.SHOULDER_2 : Button.SHOULDER2_2)] ? Int16.MaxValue : 0));
 				report.SetAxis(Xbox360Axes.RightTrigger, (short)(buttons[(int)(isLeft ? Button.SHOULDER2_2 : Button.SHOULDER_2)] ? Int16.MaxValue : 0));
 			}

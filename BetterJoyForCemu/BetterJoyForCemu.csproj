@@ -149,7 +149,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="FodyWeavers.xml" />
     <Content Include="Icons\betterjoyforcemu_icon.ico" />
     <Content Include="hidapi.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
