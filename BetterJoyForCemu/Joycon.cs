@@ -473,7 +473,7 @@ namespace BetterJoyForCemu
 					break;
 				} else {
 					//form.AppendTextBox("Pause 5ms");
-					Thread.Sleep((Int32)5);
+					Thread.Sleep((Int32)1);
 				}
 				++attempts;
             }
@@ -531,7 +531,7 @@ namespace BetterJoyForCemu
 				//other.otherStick = stick2;
                 
                 var gyr = GetGyro();
-                mouse_event(0x0001, (int)gyr.Z, (int)gyr.X, 0, 0);
+                mouse_event(0x0001, (int)gyr.Z, -(int)gyr.Y, 0, 0);
 			}
 			//
 
